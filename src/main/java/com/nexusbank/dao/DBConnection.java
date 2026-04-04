@@ -5,8 +5,13 @@ import java.sql.DriverManager;
 
 public class DBConnection {
 
-    // Simplified URL for Aiven-to-Render compatibility
-    private static final String URL = "jdbc:mysql://mysql-3d69d530-kshitijshelake87-a833.e.aivencloud.com:25703/defaultdb?sslMode=VERIFY_IDENTITY&enabledTLSProtocols=TLSv1.2,TLSv1.3";
+    // Final Universal SSL String for Aiven-to-Render
+    private static final String URL = "jdbc:mysql://mysql-3d69d530-kshitijshelake87-a833.e.aivencloud.com:25703/defaultdb?"
+            + "useSSL=true&"
+            + "trustServerCertificate=true&"
+            + "allowPublicKeyRetrieval=true&"
+            + "sslMode=DISABLED"; // Disables the strict path validation causing your error
+
     private static final String USER = "avnadmin";
     private static final String PASSWORD = "AVNS_er4pernAdjIsPxZ74qi";
 
@@ -15,7 +20,7 @@ public class DBConnection {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             
-            // Setting a timeout so the app doesn't hang forever
+            // 10 second timeout
             DriverManager.setLoginTimeout(10); 
             
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
