@@ -3,8 +3,10 @@ package com.nexusbank.controller;
 import com.nexusbank.dao.WithdrawalRequestDAO;
 import com.nexusbank.dao.TransactionDAO;
 import com.nexusbank.dao.AccountDAO;
+import com.nexusbank.dao.UserDAO;
 import com.nexusbank.model.User;
 import com.nexusbank.model.WithdrawalRequest;
+import com.nexusbank.model.Loan;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -16,32 +18,64 @@ public class ManagerServlet extends HttpServlet {
     private WithdrawalRequestDAO requestDAO = new WithdrawalRequestDAO();
     private TransactionDAO transactionDAO = new TransactionDAO();
     private AccountDAO accountDAO = new AccountDAO();
+    private UserDAO userDAO = new UserDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
+        // 1. Security Check: Only Managers (M1, M2, M3) can enter
         if (user == null || (!user.getRole().equals("M1") && !user.getRole().equals("M2") && !user.getRole().equals("M3"))) {
             response.sendRedirect("login.jsp?error=Access+Denied");
             return;
         }
 
+        // ==========================================
+        // 2. LOAN DIRECTORY LOGIC (UPDATED)
+        // ==========================================
+        String viewLoanCustomerId = request.getParameter("viewLoanCustomer");
+
+        if (viewLoanCustomerId != null) {
+            try {
+                int userId = Integer.parseInt(viewLoanCustomerId);
+                // Fetch all loans (Pending, Approved, Rejected) for this specific user
+                List<Loan> specificUserLoans = userDAO.getLoansByUserId(userId);
+                request.setAttribute("specificUserLoans", specificUserLoans);
+                request.setAttribute("viewingLoanDetails", true);
+            } catch (NumberFormatException e) {
+                response.sendRedirect("managerDashboard?error=Invalid+Customer+ID");
+                return;
+            }
+        } else {
+            // Fetch unique users who have at least one PENDING loan
+            List<User> loanCustomers = userDAO.getUniqueLoanCustomers();
+            request.setAttribute("loanCustomerList", loanCustomers);
+            request.setAttribute("viewingLoanDetails", false);
+        }
+
+        // ==========================================
+        // 3. WITHDRAWAL LOGIC (DIRECTORY STYLE)
+        // ==========================================
         String viewCustomerId = request.getParameter("viewCustomer");
 
         if (viewCustomerId != null) {
-            // VIEW: Specific Customer's Withdrawal History
-            int userId = Integer.parseInt(viewCustomerId);
-            List<WithdrawalRequest> customerRequests = requestDAO.getRequestsByUserId(userId);
-            request.setAttribute("pendingRequests", customerRequests);
-            request.setAttribute("viewingCustomer", true);
+            try {
+                int userId = Integer.parseInt(viewCustomerId);
+                List<WithdrawalRequest> customerRequests = requestDAO.getRequestsByUserId(userId);
+                request.setAttribute("pendingRequests", customerRequests);
+                request.setAttribute("viewingCustomer", true);
+            } catch (NumberFormatException e) {
+                response.sendRedirect("managerDashboard?error=Invalid+Customer+ID");
+                return;
+            }
         } else {
-            // VIEW: Directory of Unique Customers
             List<User> customers = requestDAO.getUniqueCustomersWithRequests();
             request.setAttribute("customerList", customers);
             request.setAttribute("viewingCustomer", false);
         }
 
+        // 4. Forward to the JSP
         request.getRequestDispatcher("manager_dashboard.jsp").forward(request, response);
     }
 
@@ -59,6 +93,9 @@ public class ManagerServlet extends HttpServlet {
         String action = request.getParameter("action");
         String role = manager.getRole();
 
+        // ==========================================
+        // WITHDRAWAL APPROVAL PROCESSING
+        // ==========================================
         if (requestIdStr != null && "approve".equals(action)) {
             int requestId = Integer.parseInt(requestIdStr);
             WithdrawalRequest wr = requestDAO.getRequestById(requestId);
@@ -114,7 +151,6 @@ public class ManagerServlet extends HttpServlet {
                     requestDAO.updateStatus(requestId, "FAILED (Insufficient Funds)");
                 }
             }
-            // Redirect back to that customer's specific page
             response.sendRedirect("managerDashboard?viewCustomer=" + wr.getUserId());
         } else {
             response.sendRedirect("managerDashboard");

@@ -22,16 +22,21 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Navigation Bar */
         nav {
-            padding: 20px 50px;
+            padding: 15px 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         .logo {
@@ -50,54 +55,68 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 0 20px;
+            padding: 60px 20px;
             background: radial-gradient(circle at top right, #e0e7ff 0%, #f8fafc 50%);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero h1 {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: 800;
             margin: 0;
-            line-height: 1.1;
-            letter-spacing: -2px;
+            line-height: 1;
+            letter-spacing: -3px;
             color: #0f172a;
         }
 
         .hero h1 span {
             color: var(--primary);
+            background: linear-gradient(to bottom right, #2563eb, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero p {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             color: #64748b;
-            max-width: 600px;
-            margin: 20px 0 40px;
+            max-width: 650px;
+            margin: 25px 0 45px;
+            line-height: 1.6;
         }
 
         /* Buttons */
         .cta-group {
             display: flex;
             gap: 15px;
+            width: 100%;
+            justify-content: center;
         }
 
         .btn {
-            padding: 15px 35px;
-            border-radius: 12px;
+            padding: 16px 32px;
+            border-radius: 14px;
             text-decoration: none;
             font-weight: 700;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
         }
 
         .btn-primary {
             background-color: var(--primary);
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3);
         }
 
         .btn-primary:hover {
             background-color: #1d4ed8;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.4);
         }
 
         .btn-secondary {
@@ -108,25 +127,42 @@
 
         .btn-secondary:hover {
             background-color: #f1f5f9;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            border-color: #cbd5e1;
         }
 
         /* Features/Badges */
         .badges {
-            margin-top: 60px;
+            margin-top: 80px;
             display: flex;
-            gap: 30px;
+            gap: 40px;
             color: #94a3b8;
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .badge { display: flex; align-items: center; gap: 8px; }
+        .badge { display: flex; align-items: center; gap: 10px; }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            border-top: 1px solid #f1f5f9;
+        }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .cta-group { flex-direction: column; width: 100%; max-width: 300px; }
-            nav { padding: 20px; }
+            nav { padding: 15px 20px; }
+            .hero h1 { font-size: 3rem; letter-spacing: -1.5px; }
+            .hero p { font-size: 1rem; }
+            .cta-group { flex-direction: column; align-items: center; }
+            .btn { width: 80%; text-align: center; }
+            .badges { gap: 20px; flex-direction: column; align-items: center; margin-top: 40px; }
+            .nav-links { display: none; } /* Simplified for demo */
         }
     </style>
 </head>
@@ -134,15 +170,15 @@
 
     <nav>
         <a href="index.jsp" class="logo">NexusBank</a>
-        <div>
-            <a href="login.jsp" style="text-decoration:none; color:var(--secondary); font-weight:600; margin-right:20px;">Sign In</a>
-            <a href="register.jsp" class="btn btn-primary" style="padding:10px 20px; font-size:0.9rem;">Get Started</a>
+        <div class="nav-links">
+            <a href="login.jsp" style="text-decoration:none; color:var(--secondary); font-weight:600; margin-right:20px; font-size: 0.9rem;">Sign In</a>
+            <a href="register.jsp" class="btn btn-primary" style="padding:10px 22px; font-size:0.85rem; border-radius: 10px; box-shadow: none;">Get Started</a>
         </div>
     </nav>
 
     <div class="hero">
         <h1>Secure. Fast. <span>Modern.</span></h1>
-        <p>Experience the next generation of digital banking. Manage your funds, request withdrawals, and track transactions with military-grade security.</p>
+        <p>Experience the next generation of digital banking. Manage your funds, request withdrawals, and track transactions with industry-leading security and multi-tier approval logic.</p>
 
         <div class="cta-group">
             <a href="register.jsp" class="btn btn-primary">Create Free Account</a>
@@ -155,6 +191,10 @@
             <div class="badge">📊 Real-time Tracking</div>
         </div>
     </div>
+
+    <footer>
+        &copy; 2026 NexusBank Digital Systems. All rights reserved. Built for B.Tech AI & Data Science Project.
+    </footer>
 
 </body>
 </html>

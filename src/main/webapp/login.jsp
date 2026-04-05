@@ -14,6 +14,7 @@
             --background: #f8fafc;
             --card: #ffffff;
             --text: #1e293b;
+            --danger: #ef4444;
         }
 
         body {
@@ -24,101 +25,58 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh; /* Better for mobile keyboard overlap */
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .login-card {
             background: var(--card);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
             width: 100%;
             max-width: 400px;
             border: 1px solid #e2e8f0;
+            animation: slideUp 0.5s ease-out;
         }
 
-        .brand {
-            text-align: center;
-            margin-bottom: 30px;
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .brand h1 {
-            color: var(--primary);
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 800;
-            letter-spacing: -0.025em;
-        }
+        .brand { text-align: center; margin-bottom: 25px; }
+        .brand h1 { color: var(--primary); margin: 0; font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+        .brand p { color: #64748b; margin-top: 8px; font-size: 0.9rem; }
 
-        .brand p {
-            color: #64748b;
-            margin-top: 5px;
-            font-size: 0.9rem;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: #475569; }
 
         input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            transition: all 0.2s;
+            width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 12px;
+            font-size: 1rem; box-sizing: border-box; transition: 0.2s;
+            background: #fcfdfe;
         }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); background: #fff; }
 
         .btn-login {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
+            width: 100%; padding: 14px; background-color: var(--primary); color: white;
+            border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; margin-top: 10px; transition: 0.2s;
         }
+        .btn-login:hover { background-color: #1d4ed8; transform: translateY(-1px); }
+        .btn-login:active { transform: translateY(0); }
 
-        .btn-login:hover {
-            background-color: #1d4ed8;
-        }
-
-        .footer-text {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 0.9rem;
-            color: #64748b;
-        }
-
-        .footer-text a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
+        .footer-text { text-align: center; margin-top: 25px; font-size: 0.9rem; color: #64748b; }
+        .footer-text a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .footer-text a:hover { text-decoration: underline; }
 
         .alert {
             background: #fee2e2;
-            color: #991b1b;
+            color: var(--danger);
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 20px;
             font-size: 0.85rem;
             text-align: center;
@@ -131,30 +89,32 @@
     <div class="login-card">
         <div class="brand">
             <h1>NexusBank</h1>
-            <p>Welcome back! Please login to your account.</p>
+            <p>Sign in to access your dashboard.</p>
         </div>
 
         <%-- Error Message Display --%>
         <c:if test="${not empty param.error}">
-            <div class="alert">${param.error}</div>
+            <div class="alert">
+                ⚠️ ${param.error}
+            </div>
         </c:if>
 
         <form action="login" method="post">
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" name="email" placeholder="name@example.com" required>
+                <input type="email" name="email" placeholder="name@example.com" required autocomplete="email">
             </div>
 
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="••••••••" required>
+                <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
             </div>
 
             <button type="submit" class="btn-login">Sign In</button>
         </form>
 
         <div class="footer-text">
-            Don't have an account? <a href="register.jsp">Create one now</a>
+            New to NexusBank? <a href="register.jsp">Create an account</a>
         </div>
     </div>
 
